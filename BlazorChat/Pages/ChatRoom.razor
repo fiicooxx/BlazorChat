@@ -52,10 +52,20 @@ else
         <hr />
         <textarea class="input-lg" placeholder="enter your comment" @bind="@_newMessage"></textarea>
         <button class="btn btn-default" @onclick="@(() => SendAsync(_newMessage))">Send</button>
+        <select class="form-select" @bind="@_to">
+            <option value="All">All</option>
+            @foreach (var user in userService.GetAll())
+            {
+                <option value="@user.Username">@user.Username</option>
+            }
+        </select>
     </div>
 }
 
 @code {
+    // target receving response
+    private string _to;
+
     // flag to indicate chat status
     private bool _isChatting = false;
 
@@ -102,6 +112,7 @@ else
                 .Build();
 
             _hubConnection.On<string, string>("Broadcast", BroadcastMessage);
+            _hubConnection.On<string, string>("Private", PrivateMessage);
 
             await _hubConnection.StartAsync();
 
@@ -124,6 +135,12 @@ else
         _messages.Add(new Message(name, message, isMine));
 
         // Inform blazor the UI needs updating
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void PrivateMessage(string name, string message)
+    {
+        _messages.Add(new Message(name, $"[Private]: {message}", false));
         InvokeAsync(StateHasChanged);
     }
 
