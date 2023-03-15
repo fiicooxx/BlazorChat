@@ -1,6 +1,9 @@
 ﻿@page "/chatroom"
 @inject NavigationManager navigationManager
+@inject UserService userService
+
 @using BlazorChat.Chat;
+@using BlazorChat.Data;
 @using Microsoft.AspNetCore.SignalR.Client;
 <h3>ChatRoom</h3>
 <h1>Blazor SignalR Chat Sample</h1>
@@ -102,6 +105,9 @@ else
 
             await _hubConnection.StartAsync();
 
+            // Add new user
+            userService.Add(_hubConnection.ConnectionId, _username);
+
             await SendAsync($"[Notice] {_username} joined chat room.");
         }
         catch (Exception e)
@@ -132,6 +138,9 @@ else
 
             _hubConnection = null;
             _isChatting = false;
+
+            // Remove user
+            userService.RemoveByName(_username);
         }
     }
 
