@@ -6,7 +6,7 @@
 
         public void Add(string connectionId, string username)
         {
-            _users.Add(connectionId, username);
+            _users[username] = connectionId;
         }
 
         public void RemoveByName(string username)
@@ -21,7 +21,10 @@
 
         public IEnumerable<(string ConnectionId, string Username)> GetAll()
         {
-            return _users.Select(e => (e.Value, e.Key));
+            foreach (var user in _users)
+            {
+                yield return (user.Value, user.Key);
+            }
         }
     }
 }

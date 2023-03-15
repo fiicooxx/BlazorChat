@@ -56,7 +56,7 @@ else
             <option value="All">All</option>
             @foreach (var user in userService.GetAll())
             {
-                if (user.Username != this._username)
+                if (user.Username != _username)
                 {
                     <option value="@user.Username">@user.Username</option>
                 }
