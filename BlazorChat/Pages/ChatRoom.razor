@@ -56,7 +56,10 @@ else
             <option value="All">All</option>
             @foreach (var user in userService.GetAll())
             {
-                <option value="@user.Username">@user.Username</option>
+                if (user.Username != this._username)
+                {
+                    <option value="@user.Username">@user.Username</option>
+                }
             }
         </select>
     </div>
@@ -64,7 +67,7 @@ else
 
 @code {
     // target receving response
-    private string _to;
+    private string _to = "All";
 
     // flag to indicate chat status
     private bool _isChatting = false;
