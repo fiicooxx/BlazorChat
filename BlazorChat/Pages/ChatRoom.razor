@@ -51,7 +51,7 @@ else
         }
         <hr />
         <textarea class="input-lg" placeholder="enter your comment" @bind="@_newMessage"></textarea>
-        <button class="btn btn-default" @onclick="@(() => SendAsync(_newMessage))">Send</button>
+        <button class="btn btn-primary" @onclick="@(() => SendAsync(_newMessage))">Send</button>
         <select class="form-select" @bind="@_to">
             <option value="All">All</option>
             @foreach (var user in userService.GetAll())
@@ -143,7 +143,8 @@ else
 
     private void PrivateMessage(string name, string message)
     {
-        _messages.Add(new Message(name, $"[Private]: {message}", false));
+        bool isMine = name.Equals(_username, StringComparison.OrdinalIgnoreCase);
+        _messages.Add(new Message(name, $"[Private]: {message}", isMine));
         InvokeAsync(StateHasChanged);
     }
 
@@ -174,6 +175,9 @@ else
             {
                 var connectionId = userService.GetConnectionIdByName(_to);
                 await _hubConnection.SendAsync("Private", _username, connectionId, message);
+
+                var senderId = userService.GetConnectionIdByName(_username);
+                await _hubConnection.SendAsync("Private", _username, senderId, message);
             }
             _newMessage = string.Empty;
         }
